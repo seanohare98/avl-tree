@@ -4,13 +4,13 @@
 #include <vector>
 using namespace std;
 
-struct node //each node must have a key(value), height, and leftChild/rightChild pointers
+struct node //Each node must have a key(value), height, and leftChild/rightChild pointers
 {
     int key, height;
-    node *leftChild, *rightChild, *parent;
+    node *leftChild, *rightChild;
 };
 
-class avl //avl class and functions: predecessor, findHeight, place, rotateLeft and rotateRight, insert, and balance
+class avl //AVL class and functions: predecessor, findHeight, place, rotateLeft, rotateRight, insert, and balance
 {
 
   public:
@@ -18,12 +18,12 @@ class avl //avl class and functions: predecessor, findHeight, place, rotateLeft 
 
     avl()
     {
-        //set empty tree root to null
+        //Set empty tree root to null
         root = NULL;
     };
 
     void predecessor(int value, int &p, node * root) { 
-        //compare node->key to value and determine which child to recurse into
+        //Compare node->key to value and determine correct child
         if (root == NULL)
             return;
 
@@ -73,7 +73,7 @@ class avl //avl class and functions: predecessor, findHeight, place, rotateLeft 
     int findHeight(node * n)
     {
         if (n == NULL)
-            return -1; //Height of child to a leaf node is -1
+            return -1;	//Height of child to a leaf node is -1
         return n->height;
     };
     
@@ -87,10 +87,10 @@ class avl //avl class and functions: predecessor, findHeight, place, rotateLeft 
     };
 
     node * insert(node *root, int value)
-    {   //(Simple BST Insert) + AVL Balancing
-        //1. Find correct point of insertion and then place() value
-        //2. Calculate new height
-        //3. Balance AVL properties
+    {   // (Simple BST Insert) + AVL Balancing
+        // 1. Find correct point of insertion and place value
+        // 2. Calculate new height
+        // 3. Balance AVL properties
         if (root == NULL)
             return place(value);
 
@@ -100,56 +100,58 @@ class avl //avl class and functions: predecessor, findHeight, place, rotateLeft 
         else if (value > root->key) 
             root->rightChild = insert(root->rightChild, value);
             
-        // Duplicate element
+        //Duplicate element
        else
             return root;
 
-        // Calculating new height
+        //Calculating new height
         root->height = max(findHeight(root->leftChild), findHeight(root->rightChild)) + 1; 
         return balance(root, value);
         
     };
 
     node *balance(node *root, int value) {
-        // Variable to store balancing factor
+        //Variable to store balancing factor
         int balance = 0;
+
         if (root != NULL)
             balance = findHeight(root->leftChild) - findHeight(root->rightChild);
 
-        // Rotation: Left-Right
+        //Rotation: Left-Right
         if (balance > 1 && value > root->leftChild->key)
         {
             root->leftChild = rotateLeft(root->leftChild);
             return rotateRight(root);
         }
 
-        // Rotation: Right-Left
+        //Rotation: Right-Left
         if (balance < -1 && value < root->rightChild->key)
         {
             root->rightChild = rotateRight(root->rightChild);
             return rotateLeft(root);
         }
-        // Rotation: Left-Left
+
+        //Rotation: Left-Left
         if (balance > 1 && value < root->leftChild->key)
             return rotateRight(root);
 
-        // Rotation: Right-Right
+        //Rotation: Right-Right
         if (balance < -1 && value > root->rightChild->key)
             return rotateLeft(root);
 
-        // No rotation case
+        //No rotation case
         return root;
     };
 };
 
-int main()
+int main() //Test AVL class
 {
-    //Init new tree, open test/result files and loop through ops
+    //Init new tree, open tests/results files and loop through operations (query or insert)
     avl *tree = new avl();
     ifstream testFile;
     ofstream resultFile;
     resultFile.open("results.txt");
-    testFile.open("ops-half.txt"); //Assuming "ops.txt" is file name
+    testFile.open("tests.txt");
     string input;
 
     while (getline(testFile, input))
